@@ -1,0 +1,43 @@
+version: '3.8'
+
+services:
+  db:
+    image: mysql:8.0
+    container_name: mysql-facultad
+    restart: always
+    environment:
+      MYSQL_DATABASE: facultad
+      MYSQL_USER: facultad_user
+      MYSQL_PASSWORD: facultad_pass
+      MYSQL_ROOT_PASSWORD: root_pass
+    ports:
+      - '3306:3306'
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+  app:
+    build: .
+    container_name: fastapi-facultad
+    restart: always
+    ports:
+      - '8000:8000'
+    volumes:
+      - .:/app
+    environment:
+      - DB_HOST=db
+    depends_on:
+      - db
+
+  nginx:
+    image: nginx:latest
+    container_name: nginx-facultad
+    restart: always
+    ports:
+      - '8080:80'
+    volumes:
+      - ./html:/usr/share/nginx/html:ro
+    depends_on:
+      - app
+
+volumes:
+  mysql_data:
