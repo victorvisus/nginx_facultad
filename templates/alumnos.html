@@ -11,97 +11,8 @@
       href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Sans+3:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap"
       rel="stylesheet"
     />
-    <style>
-      :root {
-        --color-negro-carbon: #0e0e11;
-        --color-gris-antracita: #1c1e22;
-        --color-gris-acero: #3a3d42;
-        --color-gris-tecnico: #b5b8be;
-        --color-verde-criptico: #3aff7a;
-        --color-blanco-tecnico: #f2f3f5;
-      }
-
-      :root[data-theme='dark'] {
-        --color-negro-carbon: #0e0e11;
-        --color-gris-antracita: #1c1e22;
-        --color-gris-acero: #3a3d42;
-        --color-gris-tecnico: #b5b8be;
-        --color-verde-criptico: #3aff7a;
-        --color-blanco-tecnico: #f2f3f5;
-      }
-
-      :root[data-theme='light'] {
-        --color-negro-carbon: #f2f3f5;
-        --color-gris-antracita: #e8e9eb;
-        --color-gris-acero: #d0d1d5;
-        --color-gris-tecnico: #3a3d42;
-        --color-verde-criptico: #00d64f;
-        --color-blanco-tecnico: #0e0e11;
-      }
-
-      * {
-        transition:
-          background-color 0.3s,
-          color 0.3s,
-          border-color 0.3s;
-      }
-
-      body {
-        font-family: 'Source Sans 3', sans-serif;
-        background-color: var(--color-negro-carbon);
-        color: var(--color-blanco-tecnico);
-      }
-
-      h1,
-      h2,
-      h3,
-      h4 {
-        font-family: 'Inter', sans-serif;
-      }
-
-      h5,
-      h6 {
-        font-family: 'Source Sans 3', sans-serif;
-      }
-
-      code,
-      pre {
-        font-family: 'JetBrains Mono', monospace;
-      }
-
-      header {
-        background-color: var(--color-gris-antracita);
-        border-color: var(--color-verde-criptico);
-      }
-
-      button#theme-toggle {
-        background-color: var(--color-verde-criptico);
-        color: var(--color-negro-carbon);
-      }
-
-      button#theme-toggle:hover {
-        filter: brightness(0.9);
-      }
-
-      table {
-        border-color: var(--color-gris-acero);
-      }
-
-      th {
-        background-color: var(--color-gris-antracita);
-        color: var(--color-verde-criptico);
-        border-color: var(--color-verde-criptico);
-      }
-
-      td {
-        color: var(--color-blanco-tecnico);
-        border-color: var(--color-gris-acero);
-      }
-
-      tr:hover {
-        background-color: var(--color-gris-antracita);
-      }
-    </style>
+    <!-- Estilos Globales -->
+    <link rel="stylesheet" href="/css/styles.css" />
   </head>
   <body class="transition-colors" id="body">
     <div class="min-h-screen transition-colors">
@@ -151,43 +62,10 @@
       </main>
     </div>
 
+    <!-- Scripts Externos -->
+    <script src="/js/theme.js"></script>
     <script>
-      function initTheme() {
-        const html = document.documentElement;
-        const savedTheme = localStorage.getItem('theme') || 'dark';
-        html.setAttribute('data-theme', savedTheme);
-        updateThemeButton();
-      }
-
-      function toggleTheme() {
-        const html = document.documentElement;
-        const currentTheme = html.getAttribute('data-theme');
-        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-        html.setAttribute('data-theme', newTheme);
-        localStorage.setItem('theme', newTheme);
-        updateThemeButton();
-      }
-
-      function updateThemeButton() {
-        const btn = document.getElementById('theme-toggle');
-        const currentTheme =
-          document.documentElement.getAttribute('data-theme');
-        if (currentTheme === 'dark') {
-          btn.textContent = '🌙 Claro';
-          btn.classList.remove('bg-gray-700', 'text-white');
-          btn.classList.add('bg-[#3AFF7A]', 'text-[#0E0E11]');
-        } else {
-          btn.textContent = '☀️ Oscuro';
-          btn.classList.remove('bg-[#3AFF7A]', 'text-[#0E0E11]');
-          btn.classList.add('bg-gray-700', 'text-white');
-        }
-      }
-
-      document
-        .getElementById('theme-toggle')
-        .addEventListener('click', toggleTheme);
-      initTheme();
-
+      // Logs de depuración de Jinja2 (necesarios en el HTML)
       console.log(
         'JSON de alumnos recibido en la plantilla:',
         '{{ alumnos | tojson | safe }}',

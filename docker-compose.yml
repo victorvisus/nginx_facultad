@@ -1,5 +1,5 @@
 services:
-  # Contenedor 1: Base de Datos Permanente (MariaDB)
+  # 1. Base de Datos (MariaDB)
   db:
     image: mariadb:10.11
     container_name: mariadb-facultad
@@ -9,18 +9,26 @@ services:
       MARIADB_USER: facultad_user
       MARIADB_PASSWORD: facultad_pass
       MARIADB_ROOT_PASSWORD: root_pass
+    # Cambiamos el puerto externo al 3307 para no chocar con instalaciones locales de Windows
     ports:
-      - '3306:3306'
+      - '3307:3306'
     volumes:
       - mariadb_data:/var/lib/mysql
+    # Configuración del Healthcheck para MariaDB
+    healthcheck:
+      test: ['CMD', 'healthcheck.sh', '--connect', '--innodb_initialized']
+      interval: 5s # Cada cuánto tiempo se ejecuta la prueba
+      timeout: 5s # Cuánto tiempo espera antes de fallar la prueba individual
+      retries: 10 # Cuántos intentos seguidos hace antes de marcar el contenedor como "unhealthy"
+      start_period: 5s # Tiempo de cortesía inicial antes de empezar a contar fallos
 
-  # Contenedor 2: Tu aplicación Python (FastAPI + Uvicorn)
+  # 2. Tu aplicación Python (FastAPI)
   app:
     build: .
     container_name: fastapi-facultad
     restart: always
-    ports:
-      - '8000:8000'
+    # ¡OJO! Quitamos la sección "ports". Al no publicarlos, el puerto 8000 queda blindado.
+    # Windows ya no puede verlo directamente, pero Nginx sí porque comparten la red interna de Docker.
     volumes:
       - .:/app
     environment:
@@ -29,20 +37,23 @@ services:
       - DB_NAME=facultad
       - DB_USER=facultad_user
       - DB_PASS=facultad_pass
+    # Control de dependencias estricto
     depends_on:
-      - db
+      db:
+        condition: service_healthy # No arranca la app hasta que el healthcheck de 'db' sea exitoso
 
-  # Contenedor 3: Servidor Web Proxy (Nginx)
+  # 3. Servidor Web Proxy (Nginx)
   nginx:
     image: nginx:latest
     container_name: nginx-facultad
     restart: always
+    # Mapeamos el puerto 9090 de tu Windows al 80 interno de Nginx
     ports:
-      - '8080:80'
+      - '9090:80'
     volumes:
-      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro # <-- Cambiamos esto
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
     depends_on:
       - app
 
 volumes:
-  mariadb_data: # Garantiza que los alumnos creados no se borren nunca
+  mariadb_data:

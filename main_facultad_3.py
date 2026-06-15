@@ -1,14 +1,14 @@
 """
-Es crucial que importes tus modelos (Alumno, Asignatura, etc.) antes
- de ejecutar la creación de tablas;
-de lo contrario, SQLModel no sabrá qué tablas tiene que generar.
+Es crucial que importes tus modelos (Alumno, Asignatura, etc.) antes de ejecutar la creación de tablas; de lo contrario, SQLModel no sabrá qué tablas tiene que generar.
 """
 
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI, HTTPException, Request
+from fastapi import FastAPI, HTTPException, Request, status
 from fastapi.encoders import jsonable_encoder
+from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
+from pymysql import IntegrityError
 from sqlmodel import select
 
 # esta Aplicación se encarga de inicializar la base de datos al arrancar el servidor FastAPI
@@ -42,17 +42,26 @@ app = FastAPI(lifespan=lifespan)
 # inicialización de la base de datos, siendo inncesario para el uso del API Rest
 # el reinicio del servidor tras la invocación de un endpoint.
 
+# Configurar archivos estáticos (CSS, JS, etc.)
+app.mount("/css", StaticFiles(directory="css"), name="css")
+app.mount("/js", StaticFiles(directory="js"), name="js")
+
 templates = Jinja2Templates(directory="templates")
 
 # una vez referida la carpeta de plantillas, se pueden crear endpoints que
 # devuelvan HTML renderizado con Jinja2, en este caso para mostrar los alumnos matriculados en una asignatura concreta.
 
 
-@app.get("/")
-async def name(request: Request):
-    #   return {"mensaje": "Servidor listo y base de datos verificada/creada"} # para probar que el servidor arranca correctamente y la base de datos se inicializa sin problemas
+@app.get("/", response_model=list[Alumno])
+async def name(session: session_dep, request: Request):
+    alumnos = session.exec(select(Alumno)).all()
+    # Convierte los objetos a un formato JSON serializable para pasarlos a la plantilla
+    # print(f"Alumnos obtenidos de la base de datos: {alumnos}")
+    alumnos_serializados = jsonable_encoder(alumnos)
+    if alumnos is None:
+        raise HTTPException(status_code=404, detail="No hay alumnos registrados")
     return templates.TemplateResponse(
-        request, "home.html", {"name": "Bienvenido a la Facultad de Informática"}
+        request, "alumnos.html", {"alumnos": alumnos_serializados}
     )
 
 
@@ -98,6 +107,14 @@ async def obtener_alumnos(session: session_dep, request: Request):
 @app.get("/formulario-becados/")
 async def formulario_alumnos_becados(request: Request):
     return templates.TemplateResponse(request=request, name="formulario_alumnos.html")
+
+
+# Endpoint para cargar el formulario de creación de alumnos
+@app.get("/formulario-agregar-alumnos/")
+async def formulario_agregar_alumnos(request: Request):
+    return templates.TemplateResponse(
+        request=request, name="formulario_crear_alumnos.html"
+    )
 
 
 # Endpoint alumnos becados
@@ -156,52 +173,83 @@ async def obtener_alumnos_becados(becado: int, session: session_dep, request: Re
 
 @app.post("/alumnos/", response_model=Alumno)
 def crear_alumno(alumnoBase: AlumnoBase, session: session_dep):
-    # FastAPI ya valida y convierte la entrada a una instancia de `Alumno`.
-    # No es necesario llamar a `model_validate` (esa es una API de pydantic v2
-    # y además aquí `Alumno` podría referirse al módulo si se importó mal).
+
     alumnoInvalido = False
     try:
         print("***************************")
         print(f"****************************NIF: {alumnoBase.NIF}")
         print(alumnoBase.email)
+
+        # ---------------------------------------------------------------------
+        # CONCURRENCIA & AISLAMIENTO: Bloqueo preventivo
+        # Hacemos un SELECT del NIF pero metiendo un candado Pesimista (.with_for_update())
+        # Si otra transacción está intentando registrar este mismo NIF a la vez,
+        # MariaDB la congelará en este punto exacto hasta que hagamos commit o rollback.
+        # ---------------------------------------------------------------------
+        stmt_concurrencia = (
+            select(Alumno).where(Alumno.NIF == alumnoBase.NIF).with_for_update()
+        )
+        alumno_existente = session.exec(stmt_concurrencia).first()
+
+        if alumno_existente:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="El alumno con este NIF ya se encuentra registrado o en proceso de registro.",
+            )
+
+        # Validaciones de formato tuyas
         if alumnoBase.validar_NIF(alumnoBase.NIF) and alumnoBase.validar_correo_regex(
             alumnoBase.email
-        ):  # Valida el NIF y el correo antes de guardar
-            # ¿****devuelve un alumno*****?
-            # Alumno alumno_db = alumnoBase + id
+        ):
             print(
                 f"Alumno válido: {alumnoBase.NIF} y {alumnoBase.email} han pasado las validaciones."
             )
-            db_alumno = Alumno.model_validate(
-                alumnoBase
-            )  # Convierte el AlumnoBase a Alumno para la base de datos
+
+            # Convierte el AlumnoBase a Alumno para la base de datos
+            db_alumno = Alumno.model_validate(alumnoBase)
             print(f"id de Alumno: {db_alumno.id}")
+
             session.add(db_alumno)
-            session.commit()
-            session.refresh(
-                db_alumno
-            )  # esto es necesario para que `db_alumno` tenga el ID
-            # generado por la base de datos después de la inserción
+            session.commit()  # <--- Aquí se guardan los datos de forma definitiva y SE LIBERA el candado
+            session.refresh(db_alumno)
             return db_alumno
         else:
             alumnoInvalido = True
             print(
                 f"-----------------Alumno no válido: {alumnoBase.NIF} o {alumnoBase.email} han fallado las validaciones."
             )
-            raise ValueError(
-                "Alumno no válido: NIF o correo electrónico no cumplen con las validaciones."
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Alumno no válido: NIF o correo electrónico no cumplen con el formato requerido.",
             )
-    except (Exception, ValueError) as e:
-        print(f"+++++++++++++++++++++Error al crear alumno: {e}")
+
+    except IntegrityError as ie:
+        # Por si se salta el select y choca contra una "Unique Constraint" de MariaDB
+        print(f"+++++++++++++++++++++Error de integridad concurrente: {ie}")
         session.rollback()
-        raise e
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Error de duplicidad: El NIF o Email ya existen en el sistema.",
+        )
+    except HTTPException as he:
+        # Si es un error controlado de FastAPI, hacemos rollback y lo relanzamos tal cual
+        session.rollback()
+        raise he
+    except Exception as e:
+        # Errores críticos genéricos
+        print(f"+++++++++++++++++++++Error crítico inesperado al crear alumno: {e}")
+        session.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Error interno en el servidor al procesar el alta.",
+        )
     finally:
         if alumnoInvalido:
             print(
-                f"Alumno no válido: {alumnoBase.NIF} o {alumnoBase.email} han fallado las validaciones. No se ha guardado en la base de datos."
+                f"Alumno no válido: {alumnoBase.NIF} o {alumnoBase.email} han fallado las validaciones. No se ha guardado."
             )
         else:
-            print(
-                f"****Alumno creado exitosamente: {alumnoBase.NIF} y {alumnoBase.email} han pasado las validaciones y se han guardado en la base de datos."
-            )
+            print(f"****Proceso finalizado para el alumno: {alumnoBase.NIF}")
+
+        # Cerramos la sesión de forma segura para liberar conexiones en el pool
         session.close()

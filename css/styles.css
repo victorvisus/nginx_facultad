@@ -1,0 +1,241 @@
+/* ========================================
+   SISTEMA DE VARIABLES DE MARCA
+   ======================================== */
+
+:root {
+  --color-negro-carbon: #0e0e11;
+  --color-gris-antracita: #1c1e22;
+  --color-gris-acero: #3a3d42;
+  --color-gris-tecnico: #b5b8be;
+  --color-verde-criptico: #3aff7a;
+  --color-blanco-tecnico: #f2f3f5;
+}
+
+:root[data-theme='dark'] {
+  --color-negro-carbon: #0e0e11;
+  --color-gris-antracita: #1c1e22;
+  --color-gris-acero: #3a3d42;
+  --color-gris-tecnico: #b5b8be;
+  --color-verde-criptico: #3aff7a;
+  --color-blanco-tecnico: #f2f3f5;
+}
+
+:root[data-theme='light'] {
+  --color-negro-carbon: #f2f3f5;
+  --color-gris-antracita: #e8e9eb;
+  --color-gris-acero: #d0d1d5;
+  --color-gris-tecnico: #3a3d42;
+  --color-verde-criptico: #00d64f;
+  --color-blanco-tecnico: #0e0e11;
+}
+
+/* ========================================
+   ESTILOS GLOBALES
+   ======================================== */
+
+* {
+  transition:
+    background-color 0.3s,
+    color 0.3s,
+    border-color 0.3s;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: 'Source Sans 3', sans-serif;
+  background-color: var(--color-negro-carbon);
+  color: var(--color-blanco-tecnico);
+  margin: 0;
+  padding: 0;
+}
+
+/* ========================================
+   TIPOGRAFÍA
+   ======================================== */
+
+h1,
+h2,
+h3,
+h4 {
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  margin: 0;
+  padding: 0;
+}
+
+h5,
+h6 {
+  font-family: 'Source Sans 3', sans-serif;
+  font-weight: 600;
+}
+
+code,
+pre {
+  font-family: 'JetBrains Mono', monospace;
+  background-color: var(--color-gris-antracita);
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+}
+
+p {
+  line-height: 1.6;
+}
+
+/* ========================================
+   COMPONENTES COMUNES
+   ======================================== */
+
+/* Header */
+header {
+  background-color: var(--color-gris-antracita);
+  border-bottom: 2px solid var(--color-verde-criptico);
+  padding: 1rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Botón Toggle de Tema */
+button#theme-toggle {
+  background-color: var(--color-verde-criptico);
+  color: var(--color-negro-carbon);
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 0.375rem;
+  font-weight: 600;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: filter 0.3s ease;
+}
+
+button#theme-toggle:hover {
+  filter: brightness(0.9);
+}
+
+button#theme-toggle:active {
+  filter: brightness(0.8);
+}
+
+/* Tablas */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  border-spacing: 0;
+  border: 2px solid var(--color-gris-acero);
+  border-radius: 0.5rem;
+  overflow: hidden;
+}
+
+th {
+  background-color: var(--color-gris-antracita);
+  color: var(--color-verde-criptico);
+  border: 2px solid var(--color-verde-criptico);
+  padding: 1rem;
+  text-align: left;
+  font-weight: 600;
+}
+
+td {
+  color: var(--color-blanco-tecnico);
+  border: 1px solid var(--color-gris-acero);
+  padding: 0.75rem 1rem;
+}
+
+tr {
+  background-color: transparent;
+}
+
+tr:hover {
+  background-color: var(--color-gris-antracita);
+}
+
+tr:nth-child(even) {
+  background-color: rgba(60, 62, 66, 0.3);
+}
+
+/* Alertas */
+.alert-box {
+  padding: 1rem;
+  border-radius: 0.5rem;
+  margin: 1rem 0;
+  border: 2px solid transparent;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.alert-success {
+  background-color: rgba(0, 100, 0, 0.2);
+  border-color: var(--color-verde-criptico);
+  color: var(--color-blanco-tecnico);
+}
+
+.alert-error {
+  background-color: rgba(139, 0, 0, 0.2);
+  border-color: #ff6b6b;
+  color: #ffb3b3;
+}
+
+.alert-warning {
+  background-color: rgba(184, 134, 11, 0.2);
+  border-color: #ffd700;
+  color: var(--color-blanco-tecnico);
+}
+
+/* ========================================
+   BREADCRUMBS (si se necesita)
+   ======================================== */
+
+.breadcrumb {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  margin: 1rem 0;
+  font-size: 0.875rem;
+}
+
+.breadcrumb a {
+  color: var(--color-verde-criptico);
+  text-decoration: none;
+}
+
+.breadcrumb a:hover {
+  text-decoration: underline;
+}
+
+.breadcrumb span {
+  color: var(--color-gris-tecnico);
+}
+
+/* ========================================
+   UTILITY CLASSES
+   ======================================== */
+
+.text-center {
+  text-align: center;
+}
+
+.text-muted {
+  color: var(--color-gris-tecnico);
+}
+
+.mt-4 {
+  margin-top: 1rem;
+}
+
+.mb-4 {
+  margin-bottom: 1rem;
+}
+
+.p-4 {
+  padding: 1rem;
+}
+
+.hidden {
+  display: none !important;
+}
+
+.visible {
+  display: block !important;
+}

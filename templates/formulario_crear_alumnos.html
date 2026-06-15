@@ -1,0 +1,272 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Crear Nuevo Alumno</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Sans+3:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <!-- Estilos Globales -->
+    <link rel="stylesheet" href="/css/styles.css" />
+    <link rel="stylesheet" href="/css/forms.css" />
+  </head>
+  <body class="transition-colors" id="body">
+    <div
+      class="min-h-screen flex items-center justify-center p-4 transition-colors"
+    >
+      <div class="w-full max-w-2xl">
+        <div class="rounded-lg border-2 p-8 shadow-lg form-container">
+          <div class="flex items-center justify-between gap-4 mb-8">
+            <div>
+              <h1 class="text-3xl font-bold mb-2">Registrar Nuevo Alumno</h1>
+              <p class="text-sm">
+                Completa los datos del alumno para agregarlo al sistema
+              </p>
+            </div>
+            <button
+              id="theme-toggle"
+              class="px-4 py-2 rounded-lg font-semibold transition-colors whitespace-nowrap"
+              aria-label="Cambiar tema"
+              type="button"
+            >
+              🌙 Claro
+            </button>
+          </div>
+
+          <form id="alumnoForm" class="space-y-6">
+            <!-- Row 1: Nombre y Primer Apellido -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label for="nombre" class="block font-semibold mb-3"
+                  >Nombre <span class="text-red-500">*</span></label
+                >
+                <input
+                  type="text"
+                  id="nombre"
+                  name="nombre"
+                  placeholder="Ej: Juan"
+                  class="w-full px-4 py-3 border-2 rounded-lg focus:outline-none transition-colors"
+                  required
+                  maxlength="255"
+                />
+              </div>
+              <div>
+                <label for="apellido1" class="block font-semibold mb-3"
+                  >Primer Apellido <span class="text-red-500">*</span></label
+                >
+                <input
+                  type="text"
+                  id="apellido1"
+                  name="apellido1"
+                  placeholder="Ej: García"
+                  class="w-full px-4 py-3 border-2 rounded-lg focus:outline-none transition-colors"
+                  required
+                  maxlength="255"
+                />
+              </div>
+            </div>
+
+            <!-- Row 2: Segundo Apellido y NIF -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label for="apellido2" class="block font-semibold mb-3"
+                  >Segundo Apellido</label
+                >
+                <input
+                  type="text"
+                  id="apellido2"
+                  name="apellido2"
+                  placeholder="Ej: López"
+                  class="w-full px-4 py-3 border-2 rounded-lg focus:outline-none transition-colors"
+                  maxlength="255"
+                />
+              </div>
+              <div>
+                <label for="NIF" class="block font-semibold mb-3"
+                  >NIF <span class="text-red-500">*</span></label
+                >
+                <input
+                  type="text"
+                  id="NIF"
+                  name="NIF"
+                  placeholder="Ej: 12345678A"
+                  class="w-full px-4 py-3 border-2 rounded-lg focus:outline-none transition-colors"
+                  required
+                  maxlength="9"
+                  pattern="[0-9]{8}[A-Z]"
+                />
+                <p class="text-xs mt-2">
+                  Formato: 8 dígitos + letra (Ej: 12345678A)
+                </p>
+              </div>
+            </div>
+
+            <!-- Row 3: Email y Fecha de Nacimiento -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label for="email" class="block font-semibold mb-3"
+                  >Email <span class="text-red-500">*</span></label
+                >
+                <input
+                  type="email"
+                  id="email"
+                  name="email"
+                  placeholder="Ej: juan@ejemplo.com"
+                  class="w-full px-4 py-3 border-2 rounded-lg focus:outline-none transition-colors"
+                  required
+                  maxlength="255"
+                />
+              </div>
+              <div>
+                <label for="fechaNacimiento" class="block font-semibold mb-3"
+                  >Fecha de Nacimiento
+                  <span class="text-red-500">*</span></label
+                >
+                <input
+                  type="date"
+                  id="fechaNacimiento"
+                  name="fechaNacimiento"
+                  class="w-full px-4 py-3 border-2 rounded-lg focus:outline-none transition-colors"
+                  required
+                />
+              </div>
+            </div>
+
+            <!-- Row 4: Dirección y Código Postal -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label for="direccion" class="block font-semibold mb-3"
+                  >Dirección <span class="text-red-500">*</span></label
+                >
+                <input
+                  type="text"
+                  id="direccion"
+                  name="direccion"
+                  placeholder="Ej: Calle Principal 123"
+                  class="w-full px-4 py-3 border-2 rounded-lg focus:outline-none transition-colors"
+                  required
+                  maxlength="255"
+                />
+              </div>
+              <div>
+                <label for="codigoPostal" class="block font-semibold mb-3"
+                  >Código Postal <span class="text-red-500">*</span></label
+                >
+                <input
+                  type="text"
+                  id="codigoPostal"
+                  name="codigoPostal"
+                  placeholder="Ej: 28001"
+                  class="w-full px-4 py-3 border-2 rounded-lg focus:outline-none transition-colors"
+                  required
+                  maxlength="10"
+                />
+              </div>
+            </div>
+
+            <!-- Row 5: Municipio y Provincia -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label for="municipio" class="block font-semibold mb-3"
+                  >Municipio <span class="text-red-500">*</span></label
+                >
+                <input
+                  type="text"
+                  id="municipio"
+                  name="municipio"
+                  placeholder="Ej: Madrid"
+                  class="w-full px-4 py-3 border-2 rounded-lg focus:outline-none transition-colors"
+                  required
+                  maxlength="255"
+                />
+              </div>
+              <div>
+                <label for="provincia" class="block font-semibold mb-3"
+                  >Provincia <span class="text-red-500">*</span></label
+                >
+                <input
+                  type="text"
+                  id="provincia"
+                  name="provincia"
+                  placeholder="Ej: Madrid"
+                  class="w-full px-4 py-3 border-2 rounded-lg focus:outline-none transition-colors"
+                  required
+                  maxlength="255"
+                />
+              </div>
+            </div>
+
+            <!-- Row 6: Beca -->
+            <div>
+              <label for="beca" class="block font-semibold mb-3"
+                >¿Tiene beca?</label
+              >
+              <select
+                name="beca"
+                id="beca"
+                class="w-full px-4 py-3 border-2 rounded-lg focus:outline-none transition-colors hover:cursor-pointer"
+              >
+                <option value="false">No, no tiene beca</option>
+                <option value="true">Sí, tiene beca</option>
+              </select>
+            </div>
+
+            <!-- Alert Messages -->
+            <div
+              id="alertContainer"
+              class="hidden rounded-lg border-2 p-4 transition-colors"
+            >
+              <p id="alertMessage"></p>
+            </div>
+
+            <!-- Buttons -->
+            <div class="flex gap-4 pt-6">
+              <button
+                type="submit"
+                class="flex-1 font-bold py-3 px-4 rounded-lg transition-colors shadow-md hover:shadow-lg"
+              >
+                Registrar Alumno
+              </button>
+              <button
+                type="reset"
+                class="flex-1 font-bold py-3 px-4 rounded-lg border-2 transition-colors"
+                style="
+                  border-color: var(--color-verde-criptico);
+                  background-color: transparent;
+                  color: var(--color-verde-criptico);
+                "
+              >
+                Limpiar Formulario
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <script src="/js/utils.js"></script>
+    <script src="/js/theme.js"></script>
+    <script src="/js/form-handler.js"></script>
+    <script>
+      // Inicializar el manejador de formulario cuando el DOM esté listo
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', () => {
+          new FormHandler('alumnoForm', '/alumnos/', {
+            redirectOnSuccess: false,
+            showSuccessTime: 3000,
+          });
+        });
+      } else {
+        new FormHandler('alumnoForm', '/alumnos/', {
+          redirectOnSuccess: false,
+          showSuccessTime: 3000,
+        });
+      }
+    </script>
+  </body>
+</html>

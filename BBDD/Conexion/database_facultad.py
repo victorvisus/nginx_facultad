@@ -1,8 +1,4 @@
-"""Código de inicialización (database.py)Primero,
-asegúrate de tener instalado el driver de MySQL
-(por ejemplo: pip install pymysql).
-este .py debería residir en el mismo directorio que tu
-main.py o en un subdirectorio accesible.
+"""Código de inicialización (database.py)Primero, asegúrate de tener instalado el driver de MySQL (por ejemplo: pip install pymysql). El archivo database_facultad.py debería residir en el mismo directorio que tu main.py o en un subdirectorio accesible.
 MiAplicacion|
             |-BBDD|
             |     |-Conexion-|_
@@ -29,7 +25,8 @@ NAME_DB = os.getenv("NAME_DB")
 
 # URL de conexión para SQLModel
 DATABASE_URL = f"mysql+pymysql://{USER_DB}:{PASSWORD_DB}@{HOST_DB}:{PORT_DB}/{NAME_DB}"
-engine = create_engine(DATABASE_URL)
+# Forzamos REPEATABLE READ (Evita lecturas sucias y lecturas no repetibles)
+engine = create_engine(DATABASE_URL, isolation_level="REPEATABLE READ")
 
 
 # Esta función obtiene la sesión de la base de datos para usarla en los endpoints de FastAPI
