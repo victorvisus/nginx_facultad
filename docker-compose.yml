@@ -31,12 +31,8 @@ services:
     # Windows ya no puede verlo directamente, pero Nginx sí porque comparten la red interna de Docker.
     volumes:
       - .:/app
-    environment:
-      - DB_HOST=db
-      - DB_PORT=3306
-      - DB_NAME=facultad
-      - DB_USER=facultad_user
-      - DB_PASS=facultad_pass
+    env_file:
+      - .env
     # Control de dependencias estricto
     depends_on:
       db:

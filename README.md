@@ -42,6 +42,7 @@ PUERTO_EXTERNO_NGINX=9090
 PUERTO_EXTERNO_MARIADB=3307
 
 # Parámetros de Conexión del Backend (FastAPI habla con MariaDB de forma interna)
+Se usa archivo .env con el siguiente contenido de ejemplo:
 DB_HOST=db
 DB_PORT=3306
 DB_NAME=facultad
